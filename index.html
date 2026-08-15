@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Флаги мира</title>
+
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  >
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+ <details class="settings">
+  <summary class="settings-button" aria-label="Настройки">
+    ⚙
+  </summary>
+
+  <div class="theme-panel">
+    <div class="theme-title">Оформление</div>
+
+    <label class="theme-choice">
+      <input id="themeWhite" type="radio" name="theme">
+      Белый
+    </label>
+
+    <label class="theme-choice">
+      <input id="themeBlack" type="radio" name="theme">
+      Чёрный
+    </label>
+
+    <label class="theme-choice">
+      <input id="themeBlue" type="radio" name="theme" checked>
+      Голубой
+    </label>
+  </div>
+</details>
+<section id="authScreen" class="auth-screen">
+  <div class="auth-card">
+    <h1>Флаги мира</h1>
+
+    <p id="authTitle">
+      Создайте аккаунт, чтобы играть, добавлять друзей и общаться.
+    </p>
+
+    <form id="authForm">
+  <input
+    id="authNickname"
+    type="text"
+    placeholder="Никнейм"
+    minlength="3"
+    maxlength="20"
+    required
+  >
+
+  <label for="authLogin">Логин</label>
+
+  <input
+    id="authLogin"
+    type="text"
+    placeholder="Например: player_01"
+    autocomplete="username"
+    minlength="3"
+    maxlength="20"
+    required
+  >
+
+  <input
+    id="authPassword"
+    type="password"
+    placeholder="Пароль (минимум 6 символов)"
+    minlength="6"
+    required
+  >
+
+  <button id="authSubmit" class="green" type="submit">
+    Создать аккаунт
+  </button>
+</form>
+
+    <p id="authMessage"></p>
+
+    <button id="authModeToggle" type="button">
+      Уже есть аккаунт? Войти
+    </button>
+  </div>
+</section>
+  <main id="appRoot" class="app" hidden>
+    <div class="app-actions">
+  <button id="friendsButton" type="button">
+    Друзья
+  </button>
+  <button
+  id="settingsButton"
+  type="button"
+  onclick="document.getElementById('settingsPanel').hidden = false"
+>
+  Настройки
+</button>
+</div>
+    <section id="menuScreen">
+      <h1>Флаги мира</h1>
+
+      <p>Введите никнейм, выберите регион и нажмите «Играть».</p>
+
+      <div class="nickname">
+        <input
+          id="nickname"
+          type="text"
+          placeholder="Ваш никнейм"
+          maxlength="20"
+        >
+        <button id="saveNickname" type="button">
+          Сохранить
+        </button>
+      </div>
+
+      <div id="regionButtons" class="regions">
+        <button type="button" data-region="europe">Европа</button>
+        <button type="button" data-region="americas">Америка</button>
+        <button type="button" data-region="asia">Азия</button>
+        <button type="button" data-region="africa">Африка</button>
+        <button type="button" data-region="world" class="wide">
+          Весь мир
+        </button>
+      </div>
+
+      <button id="playButton" class="green wide" type="button" disabled>
+        Играть
+      </button>
+    </section>
+
+    <section id="gameScreen" hidden>
+      <div class="top">
+  <strong id="player"></strong>
+
+  <div class="top-actions">
+  <button id="backButton" type="button">
+    В меню
+  </button>
+</div>
+</div>
+
+      <h1>Флаги мира</h1>
+
+      <p id="level"></p>
+      <p id="rule"></p>
+
+      <p class="score">
+        Очки: <span id="score">0</span>
+      </p>
+
+      <section id="flagRound">
+        <div class="flag">
+          <img id="flagImage" alt="Флаг страны">
+        </div>
+
+        <form id="answerForm">
+          <input
+            id="countryInput"
+            type="text"
+            placeholder="Название страны"
+            required
+          >
+
+          <input
+            id="capitalInput"
+            type="text"
+            placeholder="Столица"
+            required
+          >
+
+          <button class="green" type="submit">
+            Ответить
+          </button>
+        </form>
+      </section>
+
+      <section id="mapRound" hidden>
+        <h2 id="mapTask"></h2>
+
+        <p class="hint">
+          Наведите курсор на страну и нажмите на неё.
+        </p>
+
+        <div id="map"></div>
+
+        <p id="chosenCountry">Страна не выбрана</p>
+
+        <button id="confirmCountry" type="button" disabled>
+          Подтвердить страну
+        </button>
+        
+      </section>
+
+     
+     
+
+      <p id="message"></p>
+    </section>
+    <section id="settingsPanel" class="settings-modal" hidden>
+  <div class="settings-card">
+    <div class="settings-header">
+      <h2>Настройки</h2>
+
+     <button
+  id="closeSettingsButton"
+  type="button"
+  onclick="document.getElementById('settingsPanel').hidden = true"
+>
+  Закрыть
+</button>
+    </div>
+
+    <h3>Профиль</h3>
+
+    <img
+      id="profileAvatarPreview"
+      class="profile-avatar"
+      src=""
+      alt="Аватар игрока"
+      hidden
+    >
+
+    <label for="newNickname">Новый никнейм</label>
+
+    <input
+      id="newNickname"
+      type="text"
+      placeholder="Введите новый никнейм"
+      minlength="3"
+      maxlength="20"
+    >
+
+    <button id="changeNicknameButton" type="button">
+      Сменить имя
+    </button>
+
+    <label for="avatarInput">Новая аватарка</label>
+
+    <input
+      id="avatarInput"
+      type="file"
+      accept="image/png,image/jpeg,image/webp"
+    >
+
+    <button id="changeAvatarButton" type="button">
+      Сменить аватарку
+    </button>
+<button id="leaveBattleButton" type="button" hidden>
+  Выйти из батла
+</button>
+    <hr>
+
+    <button id="logoutButton" class="logout-button" type="button">
+      Выйти из аккаунта
+    </button>
+  </div>
+</section>
+  </main>
+<section id="friendsModal" class="friends-modal" hidden>
+  <div class="friends-card">
+    <div class="friends-header">
+      <h2>Друзья</h2>
+
+      <button id="closeFriendsButton" type="button">
+        ×
+      </button>
+    </div>
+
+    <div class="add-friend">
+      <input
+        id="friendNickname"
+        type="text"
+        placeholder="Никнейм пользователя"
+        maxlength="20"
+      >
+
+      <button id="sendFriendRequest" type="button">
+        Добавить
+      </button>
+    </div>
+
+    <p id="friendsMessage"></p>
+
+    <h3>Входящие заявки</h3>
+    <div id="friendRequests"></div>
+
+    <h3>Мои друзья</h3>
+    <h3>Приглашения в батл</h3>
+<div id="battleRequests"></div>
+<div id="friendsList"></div>
+
+    <section id="chatPanel" hidden>
+      <div class="chat-header">
+        <h3 id="chatWith">Чат</h3>
+
+        <button id="closeChatButton" type="button">
+          Закрыть чат
+        </button>
+      </div>
+
+      <div id="chatMessages" class="chat-messages"></div>
+
+      <form id="chatForm" class="chat-form">
+        <input
+          id="chatInput"
+          type="text"
+          placeholder="Введите сообщение"
+          maxlength="1000"
+          required
+        >
+
+        <button type="submit">Отправить</button>
+      </form>
+    </section>
+  </div>
+</section>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script src="auth.js"></script>
+<script src="profile.js"></script>
+<script src="social.js"></script>
+<script src="app.js"></script>
+<script>
+  const playButton = document.getElementById('playButton');
+
+  document.querySelectorAll('[data-region]').forEach(button => {
+    button.addEventListener('click', () => {
+      region = button.dataset.region;
+
+      document.querySelectorAll('[data-region]').forEach(item => {
+        item.classList.toggle('selected', item === button);
+      });
+
+      playButton.disabled = false;
+    });
+  });
+
+  if (!playButton.onclick) {
+    playButton.onclick = () => {
+      if (region) {
+        start();
+      }
+    };
+  }
+</script>
+<script>
+  document.getElementById('playButton').onclick = () => {
+    if (!region) return;
+
+    battleMode = false;
+    activeBattleId = null;
+
+    start();
+
+    Promise.resolve(startSingleGameRun())
+      .catch(error => console.error('Не удалось создать запуск игры:', error));
+  };
+</script>
+</body>
+</html>
+
