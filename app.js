@@ -63,7 +63,7 @@ const battleClient = window.supabaseClient;
 
 let battleMode = false;
 let activeBattleId = null;
-let battleChannel = null;
+window.battleChannel = window.battleChannel || null;
 let battleFinished = false;
 
 async function reportBattlePoints(points) {
