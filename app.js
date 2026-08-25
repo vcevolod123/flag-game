@@ -603,13 +603,13 @@ themeToggle?.addEventListener('click', () => {
 themeChoices.forEach(button => {
   button.addEventListener('click', () => {
     setTheme(button.dataset.theme);
+
     if (themePanel) {
-  themePanel.hidden = true;
-}
+      themePanel.hidden = true;
+    }
   });
-    $('score').textContent = score;
-  command = '';
 });
+
 const settingsButton = document.getElementById('settingsButton');
 const settingsPanel = document.getElementById('settingsPanel');
 const closeSettingsButton = document.getElementById('closeSettingsButton');
