@@ -677,4 +677,13 @@ leaveBattleButton?.addEventListener('click', async () => {
   alert('Вы вышли из батла.');
   location.reload();
 });
+YaGames.init().then(ysdk => {
+  window.ysdk = ysdk;
+  console.log("Yandex SDK initialized");
 
+  if (ysdk.features?.LoadingAPI) {
+    ysdk.features.LoadingAPI.ready();
+  }
+}).catch(error => {
+  console.error("Yandex SDK init error:", error);
+});
