@@ -1,11 +1,15 @@
 let ysdk = null;
 
-async function initYandexGames() {
+async function initYandexSDK() {
   try {
     ysdk = await YaGames.init();
     console.log("Yandex Games SDK подключён");
+
+    if (ysdk?.features?.LoadingAPI) {
+      ysdk.features.LoadingAPI.ready();
+    }
   } catch (error) {
-    console.warn("SDK Яндекс Игр недоступен вне платформы:", error);
+    console.error("Ошибка инициализации Yandex Games SDK:", error);
   }
 }
 const countries = [
@@ -674,8 +678,3 @@ leaveBattleButton?.addEventListener('click', async () => {
   location.reload();
 });
 
-initYandexGames().then(() => {
-  if (ysdk?.features?.LoadingAPI) {
-    ysdk.features.LoadingAPI.ready();
-  }
-});
