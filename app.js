@@ -1,3 +1,13 @@
+let ysdk = null;
+
+async function initYandexGames() {
+  try {
+    ysdk = await YaGames.init();
+    console.log("Yandex Games SDK подключён");
+  } catch (error) {
+    console.warn("SDK Яндекс Игр недоступен вне платформы:", error);
+  }
+}
 const countries = [
   ['europe','Франция','fr','FRA','Париж','Европа'], ['europe','Германия','de','DEU','Берлин','Европа'],
   ['europe','Италия','it','ITA','Рим','Европа'], ['europe','Испания','es','ESP','Мадрид','Европа'],
@@ -662,4 +672,10 @@ leaveBattleButton?.addEventListener('click', async () => {
   localStorage.removeItem('activeBattleId');
   alert('Вы вышли из батла.');
   location.reload();
+});
+
+initYandexGames().then(() => {
+  if (ysdk?.features?.LoadingAPI) {
+    ysdk.features.LoadingAPI.ready();
+  }
 });
