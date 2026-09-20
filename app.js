@@ -146,7 +146,7 @@ function playTone(kind) {
 }
 
 function flagUrl(code) {
-  return `https://flagcdn.com/w640/${code}.png`;
+  return `flags/${code}.svg`;
 }
 
 function updateMenu() {
