@@ -2,342 +2,205 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b3b91">
+  <meta name="description" content="Флаги мира — географическая викторина. Угадайте страну по флагу.">
 
   <title>Флаги мира</title>
 
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  >
+  <!-- Yandex Games SDK: для сборки, загружаемой через Консоль Яндекс Игр -->
+  <script src="/sdk.js"></script>
 
+  <!-- Только локальный стиль: без внешних CDN -->
   <link rel="stylesheet" href="style.css">
-  <!-- SDK Яндекс Игр -->
-<script src="/sdk.js"></script>
 </head>
 
 <body>
-  <details class="settings">
-    <summary class="settings-button" aria-label="Настройки">
-      ⚙
-    </summary>
-
-    <div class="theme-panel">
-      <div class="theme-title">Оформление</div>
-
-      <label class="theme-choice">
-        <input id="themeWhite" type="radio" name="theme">
-        Белый
-      </label>
-
-      <label class="theme-choice">
-        <input id="themeBlack" type="radio" name="theme">
-        Чёрный
-      </label>
-
-      <label class="theme-choice">
-        <input id="themeBlue" type="radio" name="theme" checked>
-        Голубой
-      </label>
-    </div>
-  </details>
-
-  <section id="authScreen" class="auth-screen">
-    <div class="auth-card">
-      <h1>Флаги мира</h1>
-
-      <p id="authTitle">
-        Создайте аккаунт, чтобы играть, добавлять друзей и общаться.
-      </p>
-
-      <form id="authForm">
-        <input
-          id="authNickname"
-          type="text"
-          placeholder="Никнейм"
-          minlength="3"
-          maxlength="20"
-          required
-        >
-
-        <label for="authLogin">Логин</label>
-
-        <input
-          id="authLogin"
-          type="text"
-          placeholder="Например: player_01"
-          autocomplete="username"
-          minlength="3"
-          maxlength="20"
-          required
-        >
-
-        <input
-          id="authPassword"
-          type="password"
-          placeholder="Пароль (минимум 6 символов)"
-          minlength="6"
-          required
-        >
-
-        <button id="authSubmit" class="green" type="submit">
-          Создать аккаунт
-        </button>
-      </form>
-
-      <p id="authMessage"></p>
-
-      <button id="authModeToggle" type="button">
-        Уже есть аккаунт? Войти
-      </button>
-    </div>
-  </section>
-
-  <main id="appRoot" class="app" hidden>
-    <div class="app-actions">
-      <button id="friendsButton" type="button">
-        Друзья
-      </button>
+  <main class="app" id="app">
+    <header class="topbar">
+      <div class="brand" aria-label="Флаги мира">
+        <span class="brand-globe" aria-hidden="true">🌍</span>
+        <span>Флаги мира</span>
+      </div>
 
       <button
+        class="icon-button"
         id="settingsButton"
         type="button"
-        onclick="document.getElementById('settingsPanel').hidden = false"
+        aria-label="Открыть настройки"
+        title="Настройки"
       >
-        Настройки
+        ⚙
       </button>
-    </div>
+    </header>
 
-    <section id="menuScreen">
-      <h1>Флаги мира</h1>
+    <section class="screen active" id="menuScreen" aria-labelledby="menuTitle">
+      <div class="panel menu-panel">
+        <p class="eyebrow">Географическая викторина</p>
+        <h1 id="menuTitle">Угадайте страну по флагу</h1>
 
-      <p>Введите никнейм, выберите регион и нажмите «Играть».</p>
-
-      <div class="nickname">
-        <input
-          id="nickname"
-          type="text"
-          placeholder="Ваш никнейм"
-          maxlength="20"
-        >
-
-        <button id="saveNickname" type="button">
-          Сохранить
-        </button>
-      </div>
-
-      <div id="regionButtons" class="regions">
-        <button type="button" data-region="europe">Европа</button>
-        <button type="button" data-region="americas">Америка</button>
-        <button type="button" data-region="asia">Азия</button>
-        <button type="button" data-region="africa">Африка</button>
-
-        <button type="button" data-region="world" class="wide">
-          Весь мир
-        </button>
-      </div>
-
-      <button id="playButton" class="green wide" type="button" disabled>
-        Играть
-      </button>
-    </section>
-
-    <section id="gameScreen" hidden>
-      <div class="top">
-        <strong id="player"></strong>
-
-        <div class="top-actions">
-          <button id="backButton" type="button">
-            В меню
-          </button>
-        </div>
-      </div>
-
-      <h1>Флаги мира</h1>
-
-      <p id="level"></p>
-      <p id="rule"></p>
-
-      <p class="score">
-        Очки: <span id="score">0</span>
-      </p>
-
-      <section id="flagRound">
-        <div class="flag">
-          <img id="flagImage" alt="Флаг страны">
-        </div>
-
-        <form id="answerForm">
-          <input
-            id="countryInput"
-            type="text"
-            placeholder="Название страны"
-            required
-          >
-
-          <input
-            id="capitalInput"
-            type="text"
-            placeholder="Столица"
-            required
-          >
-
-          <button class="green" type="submit">
-            Ответить
-          </button>
-        </form>
-      </section>
-
-      <section id="mapRound" hidden>
-        <h2 id="mapTask"></h2>
-
-        <p class="hint">
-          Наведите курсор на страну и нажмите на неё.
+        <p class="lead">
+          Введите никнейм, выберите регион и начните игру.
+          Регистрация не требуется.
         </p>
 
-        <div id="map"></div>
+        <label class="field-label" for="nicknameInput">Ваш никнейм</label>
+        <div class="nickname-row">
+          <input
+            id="nicknameInput"
+            class="text-input"
+            type="text"
+            inputmode="text"
+            maxlength="18"
+            autocomplete="nickname"
+            placeholder="Например, Географ"
+            aria-describedby="nicknameHint"
+          >
+          <button class="secondary-button" id="saveNicknameButton" type="button">
+            Сохранить
+          </button>
+        </div>
+        <p class="field-hint" id="nicknameHint">
+          Никнейм сохраняется только на этом устройстве.
+        </p>
 
-        <p id="chosenCountry">Страна не выбрана</p>
+        <h2 class="section-title">Выберите регион</h2>
 
-        <button id="confirmCountry" type="button" disabled>
-          Подтвердить страну
+        <div class="region-grid" id="regionButtons" role="group" aria-label="Выбор региона">
+          <button class="region-button" type="button" data-region="europe">Европа</button>
+          <button class="region-button" type="button" data-region="americas">Америка</button>
+          <button class="region-button" type="button" data-region="asia">Азия</button>
+          <button class="region-button" type="button" data-region="africa">Африка</button>
+          <button class="region-button" type="button" data-region="oceania">Океания</button>
+          <button class="region-button region-wide" type="button" data-region="world">Весь мир</button>
+        </div>
+
+        <div class="menu-stats" aria-label="Ваш рекорд">
+          <span>Лучший результат</span>
+          <strong><span id="bestScoreMenu">0</span> очков</strong>
+        </div>
+
+        <button class="primary-button start-button" id="playButton" type="button" disabled>
+          Играть
         </button>
-      </section>
 
-      <p id="message"></p>
+        <p class="rules-short">
+          В каждом раунде выберите страну, которой принадлежит показанный флаг.
+          За правильные ответы начисляются очки, а серия ответов увеличивает результат.
+        </p>
+      </div>
     </section>
 
-    <section id="settingsPanel" class="settings-modal" hidden>
-      <div class="settings-card">
-        <div class="settings-header">
-          <h2>Настройки</h2>
+    <section class="screen" id="gameScreen" aria-labelledby="gameTitle" hidden>
+      <div class="panel game-panel">
+        <div class="game-top">
+          <button class="text-button" id="backToMenuButton" type="button">
+            ← В меню
+          </button>
 
-          <button
-            id="closeSettingsButton"
-            type="button"
-            onclick="document.getElementById('settingsPanel').hidden = true"
-          >
-            Закрыть
+          <div class="game-stats">
+            <span>Раунд <strong id="roundValue">1</strong>/<strong id="totalRoundsValue">20</strong></span>
+            <span>Очки <strong id="scoreValue">0</strong></span>
+            <span>Серия <strong id="streakValue">0</strong></span>
+          </div>
+        </div>
+
+        <div class="progress-track" aria-label="Прогресс игры">
+          <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <p class="eyebrow" id="regionName">Весь мир</p>
+        <h1 id="gameTitle">Какой стране принадлежит этот флаг?</h1>
+
+        <div class="flag-card" aria-live="polite">
+          <img id="flagImage" src="" alt="">
+        </div>
+
+        <div class="answers" id="answerButtons" aria-label="Варианты ответа"></div>
+
+        <p class="answer-message" id="answerMessage" role="status" aria-live="polite"></p>
+
+        <button class="primary-button next-button" id="nextButton" type="button" hidden>
+          Следующий флаг
+        </button>
+      </div>
+    </section>
+
+    <section class="screen" id="resultScreen" aria-labelledby="resultTitle" hidden>
+      <div class="panel result-panel">
+        <p class="eyebrow">Игра завершена</p>
+        <h1 id="resultTitle">Ваш результат</h1>
+
+        <div class="result-score">
+          <span id="finalScore">0</span>
+          <small>очков</small>
+        </div>
+
+        <p class="result-text" id="resultText"></p>
+
+        <div class="result-grid">
+          <div class="result-card">
+            <span>Правильных ответов</span>
+            <strong id="correctValue">0</strong>
+          </div>
+          <div class="result-card">
+            <span>Лучший результат</span>
+            <strong id="bestScoreResult">0</strong>
+          </div>
+        </div>
+
+        <button class="primary-button" id="playAgainButton" type="button">
+          Играть снова
+        </button>
+
+        <button class="secondary-button full-width-button" id="resultToMenuButton" type="button">
+          Выбрать другой регион
+        </button>
+      </div>
+    </section>
+
+    <section class="screen modal-screen" id="settingsScreen" aria-labelledby="settingsTitle" hidden>
+      <div class="modal-backdrop" id="settingsBackdrop"></div>
+
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+        <div class="modal-head">
+          <h2 id="settingsTitle">Настройки</h2>
+          <button class="icon-button" id="closeSettingsButton" type="button" aria-label="Закрыть настройки">
+            ×
           </button>
         </div>
 
-        <h3>Профиль</h3>
+        <label class="toggle-row" for="soundToggle">
+          <span>
+            <strong>Звук</strong>
+            <small>Звуковые сигналы правильных и неправильных ответов</small>
+          </span>
+          <input id="soundToggle" type="checkbox">
+        </label>
 
-        <img
-          id="profileAvatarPreview"
-          class="profile-avatar"
-          src=""
-          alt="Аватар игрока"
-          hidden
-        >
+        <div class="rules-box">
+          <h3>Как играть</h3>
+          <p>
+            Введите никнейм, выберите регион и нажмите «Играть».
+            На экране появится флаг и четыре варианта названия страны.
+            Нажмите на правильный ответ. После 20 вопросов будет показан итоговый результат.
+          </p>
+        </div>
 
-        <label for="newNickname">Новый никнейм</label>
-
-        <input
-          id="newNickname"
-          type="text"
-          placeholder="Введите новый никнейм"
-          minlength="3"
-          maxlength="20"
-        >
-
-        <button id="changeNicknameButton" type="button">
-          Сменить имя
-        </button>
-
-        <label for="avatarInput">Новая аватарка</label>
-
-        <input
-          id="avatarInput"
-          type="file"
-          accept="image/png,image/jpeg,image/webp"
-        >
-
-        <button id="changeAvatarButton" type="button">
-          Сменить аватарку
-        </button>
-
-        <button id="leaveBattleButton" type="button" hidden>
-          Выйти из батла
-        </button>
-
-        <hr>
-
-        <button id="logoutButton" class="logout-button" type="button">
-          Выйти из аккаунта
+        <button class="danger-button" id="resetProgressButton" type="button">
+          Сбросить локальный рекорд
         </button>
       </div>
     </section>
   </main>
 
-  <section id="friendsModal" class="friends-modal" hidden>
-    <div class="friends-card">
-      <div class="friends-header">
-        <h2>Друзья</h2>
+  <noscript>
+    <p class="noscript-message">
+      Для работы игры включите JavaScript в браузере.
+    </p>
+  </noscript>
 
-        <button id="closeFriendsButton" type="button">
-          ×
-        </button>
-      </div>
-
-      <div class="add-friend">
-        <input
-          id="friendNickname"
-          type="text"
-          placeholder="Никнейм пользователя"
-          maxlength="20"
-        >
-
-        <button id="sendFriendRequest" type="button">
-          Добавить
-        </button>
-      </div>
-
-      <p id="friendsMessage"></p>
-
-      <h3>Входящие заявки</h3>
-      <div id="friendRequests"></div>
-
-      <h3>Мои друзья</h3>
-
-      <h3>Приглашения в батл</h3>
-      <div id="battleRequests"></div>
-
-      <div id="friendsList"></div>
-
-      <section id="chatPanel" hidden>
-        <div class="chat-header">
-          <h3 id="chatWith">Чат</h3>
-
-          <button id="closeChatButton" type="button">
-            Закрыть чат
-          </button>
-        </div>
-
-        <div id="chatMessages" class="chat-messages"></div>
-
-        <form id="chatForm" class="chat-form">
-          <input
-            id="chatInput"
-            type="text"
-            placeholder="Введите сообщение"
-            maxlength="1000"
-            required
-          >
-
-          <button type="submit">Отправить</button>
-        </form>
-      </section>
-    </div>
-  </section>
-
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <script src="supabase-config.js"></script>
-  <script src="auth.js"></script>
-  <script src="profile.js"></script>
-  <script src="social.js"></script>
+  <!-- Основная логика игры и инициализация SDK -->
   <script src="app.js"></script>
 </body>
 </html>
