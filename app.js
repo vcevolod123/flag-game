@@ -146,7 +146,7 @@ function playTone(kind) {
 }
 
 function flagUrl(code) {
-  return `flags/${code}.svg`;
+  return new URL(`flags/${code}.svg`, document.baseURI).href;
 }
 
 function updateMenu() {
